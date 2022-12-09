@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef} from 'react'
+import React, { useEffect, useState, useRef,useLayoutEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMessage } from '@fortawesome/free-solid-svg-icons'
 import { faUserFriends } from '@fortawesome/free-solid-svg-icons'
@@ -22,6 +22,7 @@ export const PublicMessage  = (props) => {
     const [active, setActive] = useState(false);
     const [onlineUsers, setOnlineUsers] = useState(new Map());
     const [chatsUsers, setChatsUsers] = useState(new Map());
+    const [infoBanner, setInfoBanner] = useState(new Map());
 
     useEffect(() => {
         if(!conectado){
@@ -53,21 +54,45 @@ export const PublicMessage  = (props) => {
 
 
 
-    useEffect(() => {
-         fetch("http://localhost:8080/api/chatsprivados/UserChats/" + sessionStorage.getItem("id_logged"))
-        .then((response) => response.json())
-        .then((chat) => {
-            setChatsUsers(chat); // ⬅️ Guardar datos
-        });
-      }, []);
+    // useLayoutEffect(() => {
+    //      fetch("http://localhost:8080/api/chatsprivados/UserChats/" + sessionStorage.getItem("id_logged"))
+    //     .then((response) => response.json())
+    //     .then((chat) => {
+    //         for (let value of chat.values()){
+
+    //             var chatMessage = {
+    //                 sender_name: value['username'],
+    //                 fotoperfil: value['fotoperfil'],
+    //                 statususer: value['status'],
+    //                 status:"JOIN"
+    //               };
+        
+    //               stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
+    //         }   
+    //         setChatsUsers(chat); // ⬅️ Guardar datos
+    //     });
+    //   }, []);
 
 
     const GetUserMessages = () =>{
         fetch("http://localhost:8080/api/chatsprivados/UserChats/" + sessionStorage.getItem("id_logged"))
         .then((response) => response.json())
         .then((chat) => {
+            for (let value of chat.values()){
+
+                var chatMessage = {
+                    sender_name: value['username'],
+                    fotoperfil: value['fotoperfil'],
+                    statususer: value['status'],
+                    status:"JOIN"
+                  };
+        
+                  stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
+            }
+
             setChatsUsers(chat); // ⬅️ Guardar datos
         });
+
     }
 
     const setInfo=()=>{
@@ -92,6 +117,7 @@ export const PublicMessage  = (props) => {
         userData.connected = 'true'
         stompClient.subscribe('/chatroom/public', onMessageReceived);
         stompClient.subscribe('/user/' + userData.sender_name + '/private', onPrivateMessage);
+        GetUserMessages();
         userJoin();
         
 
@@ -101,11 +127,13 @@ export const PublicMessage  = (props) => {
         var chatMessage = {
           sender_name: userData.sender_name,
           fotoperfil: userData.fotoperfil,
+          statususer: "online",
           status:"JOIN"
         };
         stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
-       
-  }
+
+
+    }
 
   const onMessageReceived = (payload)=>{
     var payloadData = JSON.parse(payload.body);
@@ -121,6 +149,7 @@ export const PublicMessage  = (props) => {
             setPublicChats([...publicChats]);
             break;
     }
+   
 }
 const onPrivateMessage = (payload)=>{
     var payloadData = JSON.parse(payload.body);
@@ -135,21 +164,10 @@ const onPrivateMessage = (payload)=>{
         setPrivateChats(new Map(privateChats));
     }
     GetUserMessages();
+
 }
 
-// const onPrivateMessage = (payload)=>{
-//     var payloadData = JSON.parse(payload.body);
-//     console.log(payloadData);
-//     if(privateChats.get(payloadData.sender_name)){
-//         privateChats.get(payloadData.sender_name).push(payloadData);
-//         setPrivateChats(new Map(privateChats));
-//     }else{
-//         let list =[];
-//         list.push(payloadData);
-//         privateChats.set(payloadData.sender_name,list);
-//         setPrivateChats(new Map(privateChats));
-//     }
-// }
+
 
 
 
@@ -173,7 +191,6 @@ const sendValue=()=>{
             fecha_enviado: datetime,
             fotoperfil : sessionStorage.getItem("foto_logged"),
             status:"MESSAGE",
-            es_privado: false,
             id_chat: sessionStorage.getItem("id_logged")
           };
           stompClient.send("/app/message", {}, JSON.stringify(chatMessage));
@@ -194,8 +211,8 @@ const sendPrivateValue=()=>{
         fecha_enviado: datetime,
         fotoperfil : sessionStorage.getItem("foto_logged"),
         status:"MESSAGE",
-        es_privado: true,
-        id_chat: sessionStorage.getItem("id_logged")
+        id_chat: sessionStorage.getItem("id_logged"),
+
       };
       
       if(userData.sender_name !== tab){
@@ -206,13 +223,28 @@ const sendPrivateValue=()=>{
       stompClient.send("/app/private-message", {}, JSON.stringify(chatMessage));
       setUserData({...userData,"message": ""});
     }
-    GetUserMessages();
-
-    
 }
 
-const getUserMessage=()=>{
-    stompClient.send("/app/GetUserChats/" + sessionStorage.getItem("id_logged"));
+
+
+const getUserMessage=(username)=>{
+
+    fetch("http://localhost:8080/api/chatsprivados/getusermensajes")
+            .then((response) => response.json())
+            .then((chats) => {
+                for (let value of chats.values()){
+                        if(value['receiver_name']==username && value['sender_name']==sessionStorage.getItem("username_logged") 
+                        || value['sender_name']==username && value['receiver_name']==sessionStorage.getItem("username_logged" )){
+                            privateChats.get(username).push(value);
+                            setPrivateChats(new Map(privateChats));
+                        }
+                }
+    
+            });
+   
+    setInfoBanner(privateChats.get(username));
+
+
 }
 
 const handleUsername=(event)=>{
@@ -351,50 +383,50 @@ Date.prototype.timeNow = function () {
     }:
     <div className="PrivateMessageClass">
 
-        <Modal active={active} toggle={toggle}>
+            <Modal active={active} toggle={toggle}>
 
-            <h2 id='titulo-chats'>En línea</h2>
+                <h2 id='titulo-chats'>En línea</h2>
 
-            <ul className='no-bullets'>
-                        {[...onlineUsers].map((usuario,index)=>(
-                        <li key={index} >
-                            {
-                                <button className='btn-enlinea'>
-                                <div className="card-online">
-                                    <div className={"status2 " + usuario['status']} />
-                                    <img src={usuario['fotoperfil']} alt="..." width={50} className="rounded-circle shadow-sm" />
-                                    <p className="nombre-contactos">{usuario['nombres'] + " " + usuario['apellidos']}</p>
-                                    <p className="email-contactos">{usuario['email']}</p>
-                                </div>
-                            </button>
-                            }
-                        </li>
-                        ))}
-                            
-            </ul>
+                <ul className='no-bullets'>
+                            {[...onlineUsers].map((usuario,index)=>(
+                            <li key={index} >
+                                {
+                                    <button className='btn-enlinea'>
+                                    <div className="card-online">
+                                        <div className={"status2 " + usuario['status']} />
+                                        <img src={usuario['fotoperfil']} alt="..." width={50} className="rounded-circle shadow-sm" />
+                                        <p className="nombre-contactos">{usuario['nombres'] + " " + usuario['apellidos']}</p>
+                                        <p className="email-contactos">{usuario['email']}</p>
+                                    </div>
+                                </button>
+                                }
+                            </li>
+                            ))}
+                                
+                </ul>
 
-        </Modal>
+            </Modal>
        
             <div className="vertical-nav" id="sidebar">
-                <ul className="nav flex-column mb-0" id="nav-bar-chat">
-                    <li className="nav-item mx-auto">
-                        <div className="nav-link text-dark font-italic" onClick={() => setTypeMessage('private')}>
-                            <FontAwesomeIcon icon={faMessage} color='white' size='3x'/>
-                        </div>
-                    </li>
-                    <br />
-                    <li className="nav-item mx-auto">
-                        <div className="nav-link text-dark font-italic" onClick={() => setTypeMessage('public')} >
-                            <FontAwesomeIcon icon={faUserFriends} color='white' size='3x'/>
-                        </div>
-                    </li>
-                    <br /> 
-                </ul>
-                <div className="media d-flex" id="profile-picture">
-                    <img src={sessionStorage.getItem("foto_logged")} alt="..." width={60} className=" mx-auto rounded-circle img-thumbnail shadow-sm" />
-                </div> 
+                    <ul className="nav flex-column mb-0" id="nav-bar-chat">
+                        <li className="nav-item mx-auto">
+                            <div className="nav-link text-dark font-italic" onClick={() => setTypeMessage('private')}>
+                                <FontAwesomeIcon icon={faMessage} color='white' size='3x'/>
+                            </div>
+                        </li>
+                        <br />
+                        <li className="nav-item mx-auto">
+                            <div className="nav-link text-dark font-italic" onClick={() => setTypeMessage('public')} >
+                                <FontAwesomeIcon icon={faUserFriends} color='white' size='3x'/>
+                            </div>
+                        </li>
+                        <br /> 
+                    </ul>
+                    <div className="media d-flex" id="profile-picture">
+                        <img src={sessionStorage.getItem("foto_logged")} alt="..." width={60} className=" mx-auto rounded-circle img-thumbnail shadow-sm" />
+                    </div> 
             </div>
-            {/* Lista Mensajes */}
+
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-5 col-xl-4" id="mensajes-lista">
@@ -407,84 +439,72 @@ Date.prototype.timeNow = function () {
                         <p id="titulo-mensajes">Privados</p>
                         <hr />
 
-                <div className="member-list">
-                <ul>
-                    {/* <li onClick={()=>{setTab("CHATROOM")}} className={`member ${tab==="CHATROOM" && "active"}`}>Chatroom</li> */}
-                    
-                    
-                        {/* {[...privateChats.keys()].map((name,index)=>(
-                        <li onClick={() =>  {setTab(name); getUserMessage();}} className={`member ${tab===name && "active"}`} key={index} style={{display: name === sessionStorage.getItem("username_logged") ? 'none' : 'block'}}>
-                            <div className="card-mensaje">
-                            <div className="status online" />
-                            <img src="https://bootstrapious.com/i/snippets/sn-v-nav/avatar.png" alt="..." width={80} className="rounded-circle shadow-sm" />
-                            <p className="nombre-mensaje">{name}</p>
-                            <p className="mensaje-card">Mensaje</p>
-                        </div>
-                        
-                        </li>
-                        ))} */}
+                    <div className="member-list">
+                        <ul>
+                            {[...chatsUsers.values()].map((chats,index)=>(
+                            <li onClick={() =>  {getUserMessage(chats['username']);  setTab(chats['username']); }} className={`member ${tab===chats['username'] && "active"}`} key={index} style={{display: chats['username'] === sessionStorage.getItem("username_logged") ? 'none' : 'block'}}>
+                                <div className="card-mensaje">
+                                    <div className={"status " + chats['status']} />
+                                    <img src={chats['fotoperfil']} alt="..." width={80} className="rounded-circle shadow-sm" />
+                                    <p className="nombre-mensaje">{chats['username']}</p>
+                                    <p className="mensaje-card">{chats['ultimomensaje']}</p>
+                                </div>
+                            
+                            </li>
+                            ))}
 
-                        {[...chatsUsers.values()].map((chats,index)=>(
-                        <li onClick={() =>  {setTab(chats['username']); getUserMessage();}} className={`member ${tab===chats['username'] && "active"}`} key={index} style={{display: chats['username'] === sessionStorage.getItem("username_logged") ? 'none' : 'block'}}>
-                            <div className="card-mensaje">
-                            <div className={"status " + chats['status']} />
-                            <img src={chats['fotoperfil']} alt="..." width={80} className="rounded-circle shadow-sm" />
-                            <p className="nombre-mensaje">{chats['username']}</p>
-                            <p className="mensaje-card">{chats['ultimomensaje']}</p>
-                        </div>
-                        
-                        </li>
-                        ))}
+                         </ul>
+                    </div>    
 
-                </ul>
-            </div>    
-
-            </div>
+                </div>
                     <div className="col" style={{backgroundColor: '#F4F4F4'}}>
-                        <div className="titulo-nombre">
-                            <h2>Jon Pardi</h2>
-                            <p>Activo(a)</p>
-                            <img src="https://bootstrapious.com/i/snippets/sn-v-nav/avatar.png" alt="..." width={80} className="rounded-circle shadow-sm" />
-                            <FontAwesomeIcon icon={faVideo} color='white' />
-                            <FontAwesomeIcon icon={faCircleInfo} color='white' onClick={connect} />
-                        </div>
+                        
             {tab!=="CHATROOM" && 
-            
+                
                 <div className="chat-content">
-                    <ul className="chat-messages-priv" id="chat-messages-priv">
-                        {[...privateChats.get(tab)].map((chat,index)=>(
-                        <li className={`message ${chat.sender_name === userData.username && "self"}`} key={index} >
-                            {chat.sender_name !== userData.sender_name &&
-                            <div className="mensaje-recibido-card-privado" style={{display: chat.message != null ? 'block' : 'none'}}>
-                                <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
-                                <p className="avatar-privado"><strong>{chat.sender_name}</strong></p>
-                                <p id="mensaje-burbuja-privado" className="message-data">{chat.message}</p>
-                                <p id="hora-burbuja-privado">{chat.fecha_enviado}</p>
-                            </div>
-                            }
-                            {chat.sender_name === userData.sender_name && 
-                            <div className="mensaje-enviado-card-privado" >
-                            <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
-                            <p className="avatar-privado self"><strong>{chat.sender_name}</strong></p>
-                            <p id="mensaje-burbuja-enviado-privado" className="message-data">{chat.message}</p>
-                            <p id="hora-burbuja-enviado-privado">{chat.fecha_enviado}</p>
-                            </div>
-                            }
-                        </li>
-                        ))}
-                    </ul>
+                    
+                         {
+                        <div className="titulo-nombre">
+                            <h2>{infoBanner[0]['sender_name']}</h2>
+                            <p>{infoBanner[0]['statususer']}</p>
+                            <img src={infoBanner[0]['fotoperfil']} alt="..." width={80} className="rounded-circle shadow-sm" />
+                            <FontAwesomeIcon icon={faVideo} color='white' />
+                        </div>}
 
-                    <div className="send-message">
-                        <div className="escribir-mensaje">
-                                <input type="text" id="w3review2" name="w3review2" className="input-message2" placeholder="Escribe tu mensaje" autoComplete='off' value={userData.message} onChange={handleMessage} onKeyDown={_handleKeyDownPrivate} rows={1} cols={70} />
-                                <button type="button" className="send-button2" onClick={sendPrivateValue}>
-                                    <FontAwesomeIcon icon={faPaperPlane} color='gray' size='xl' className="send-button" />
-                                </button>
-                                <button type='button'  onClick="">
-                                    <FontAwesomeIcon icon={faPaperclip} color='gray' size='xl'/>
-                                </button>
-                            </div> 
-                    </div>
+                            <ul className="chat-messages-priv" id="chat-messages-priv">
+                                {[...privateChats.get(tab)].map((chat,index)=>(
+                                <li className={`message ${chat.sender_name === userData.username && "self"}`} key={index} >
+                                    {chat.sender_name !== userData.sender_name &&
+                                    <div className="mensaje-recibido-card-privado" style={{display: chat.message != null ? 'block' : 'none'}}>
+                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                        <p className="avatar-privado"><strong>{chat.sender_name}</strong></p>
+                                        <p id="mensaje-burbuja-privado" className="message-data">{chat.message}</p>
+                                        <p id="hora-burbuja-privado">{chat.fecha_enviado}</p>
+                                    </div>
+                                    }
+                                    {chat.sender_name === userData.sender_name && 
+                                    <div className="mensaje-enviado-card-privado" >
+                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                        <p className="avatar-privado self"><strong>{chat.sender_name}</strong></p>
+                                        <p id="mensaje-burbuja-enviado-privado" className="message-data">{chat.message}</p>
+                                        <p id="hora-burbuja-enviado-privado">{chat.fecha_enviado}</p>
+                                    </div>
+                                    }
+                                </li>
+                                ))}
+                            </ul>
+
+                            <div className="send-message">
+                                <div className="escribir-mensaje">
+                                        <input type="text" id="w3review2" name="w3review2" className="input-message2" placeholder="Escribe tu mensaje" autoComplete='off' value={userData.message} onChange={handleMessage} onKeyDown={_handleKeyDownPrivate} rows={1} cols={70} />
+                                        <button type="button" className="send-button2" onClick={() => {sendPrivateValue(); GetUserMessages();}}>
+                                            <FontAwesomeIcon icon={faPaperPlane} color='gray' size='xl' className="send-button" />
+                                        </button>
+                                        <button type='button'  onClick="">
+                                            <FontAwesomeIcon icon={faPaperclip} color='gray' size='xl'/>
+                                        </button>
+                                    </div> 
+                            </div>
                 </div>}
             
                         
