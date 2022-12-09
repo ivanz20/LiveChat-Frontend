@@ -309,7 +309,7 @@
   position: relative;
   font-family: 'Inter', sans-serif;
   font-size: x-small;
-  margin-left: 85px;
+  margin-left:70px;
   margin-top: -80px;
 
 }
@@ -494,16 +494,16 @@ background: linear-gradient(0deg, rgba(196,215,224,1) 0%, rgba(110,133,183,1) 10
 .avatar{
   position: absolute;
   font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  left: 16%;
+  font-weight: 800;
+  left: 25%;
   margin-top: -65px;
   font-size: x-small;}
 
   .avatar.self{
     position: absolute;
     font-family: 'Inter', sans-serif;
-    font-weight: 400;
-    left: 80%;
+    font-weight: 800;
+    left: 90%;
     margin-top: -65px;
     font-size: x-small;
   }
@@ -576,7 +576,7 @@ background: linear-gradient(0deg, rgba(196,215,224,1) 0%, rgba(110,133,183,1) 10
   position: relative;
   font-family: 'Inter', sans-serif;
   font-size: x-small;
-  margin-left: 85px;
+  margin-left: 200px;
   margin-top: -80px;
 
 }
@@ -624,18 +624,20 @@ background: linear-gradient(0deg, rgba(196,215,224,1) 0%, rgba(110,133,183,1) 10
   position: absolute;
   font-family: 'Inter', sans-serif;
   font-weight: 400;
-  left:22%;
+  left:8%;
   margin-top: -65px;
   font-size: x-small;
+  text-align: left;
 }
 
   .avatar-privado.self{
     position: absolute;
     font-family: 'Inter', sans-serif;
     font-weight: 400;
-    left: 74%;
+    right:7%;
     margin-top: -65px;
     font-size: x-small;
+    text-align: right;
   }
 
   .chat-messages-priv{
@@ -647,3 +649,65 @@ background: linear-gradient(0deg, rgba(196,215,224,1) 0%, rgba(110,133,183,1) 10
   .chat-messages-priv::-webkit-scrollbar{
     display: none;
   }
+
+  .card-online{
+    position: relative;
+    margin-top:10px;
+    height: 50px;
+  }
+  .card-online>img{
+    position: relative;
+    margin-left: -230px;
+    z-index: -1;
+  }
+  .status2{
+    position: absolute;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    margin-top:35px;
+    border: 2px solid white;
+  }
+
+  #titulo-chats{
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: large;
+
+  }
+
+  .nombre-contactos{
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: large;
+    position: relative;
+    margin-left: 40px;
+    top: -45px;
+    text-align: left;
+  }
+  .email-contactos{
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: small;
+    position: relative;
+    margin-left: 40px;
+    top: -65px;
+    text-align: left;
+  }
+  .btn-enlinea{
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    transition: 0.5s ease;
+  }
+  .btn-enlinea:hover{
+    transform: scale(1.02);
+    transition: 0.5s ease;
+  }
+  .no-bullets {
+    list-style-type: none;
+    height: 400px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}

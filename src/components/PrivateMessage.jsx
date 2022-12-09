@@ -43,7 +43,7 @@ export const PrivateMessage  = (props) => {
                         <h3 style={{fontWeight: 700}}>Mensajes
                             <FontAwesomeIcon icon={faPenSquare} color='white'  id="nuevo-mensaje" />
                         </h3>
-                        {/* <input type="text" id="buscar-mensaje" placeholder="Buscar" /> */}
+                        <input type="text" id="buscar-mensaje" placeholder="Buscar" />
                         <p id="titulo-mensajes">Personales</p>
                         <hr />
                         <div className="card-mensaje selected">
