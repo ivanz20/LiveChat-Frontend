@@ -4,6 +4,7 @@ import { Register } from './components/Register'
 import {Login} from './components/Login'
 import {PrivateMessage} from './components/PrivateMessage'
 import { PublicMessage } from './components/PublicMessage'
+import {Mapa} from './components/Mapa'
 
 const App = () => {
   const [currentForm,setCurrentForm] = useState('login');

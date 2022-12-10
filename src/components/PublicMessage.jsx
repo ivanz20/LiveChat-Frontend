@@ -7,11 +7,19 @@ import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import { faPenSquare } from '@fortawesome/free-solid-svg-icons'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons'
+import { faLocation } from '@fortawesome/free-solid-svg-icons'
+import { faGear } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from "react-router-dom";
 import {over} from 'stompjs';
 import SockJS from 'sockjs-client';
 import axios from 'axios'
 import Modal from './Modal';
+import {useJsApiLoader, GoogleMap} from '@react-google-maps/api';
+import {MarkerF} from '@react-google-maps/api'
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+
+
 
 var stompClient =null;
 var datetime=''
@@ -19,7 +27,13 @@ var conectado = false;
 
 export const PublicMessage  = (props) => {
 
+    const {isLoaded} = useJsApiLoader({
+        googleMapsApiKey: 'AIzaSyCj3CaAQnBsR2BB-oh1MXKfgb1hmyX13e4',
+    })
+    const inputFile = useRef(null) 
     const [active, setActive] = useState(false);
+    const [active2, setActive2] = useState(false);
+
     const [onlineUsers, setOnlineUsers] = useState(new Map());
     const [chatsUsers, setChatsUsers] = useState(new Map());
     const [infoBanner, setInfoBanner] = useState(new Map());
@@ -225,6 +239,38 @@ const sendPrivateValue=()=>{
     }
 }
 
+const sendLocationPrivate=()=>{
+    const timeElapsed = Date.now();
+    const today = new Date(timeElapsed);
+    datetime =  today.toISOString(); 
+    navigator.geolocation.getCurrentPosition(function(position){
+    
+
+    if (stompClient) {
+      var chatMessage = {
+        sender_name: sessionStorage.getItem("username_logged"),
+        receiver_name:tab,
+        message: sessionStorage.getItem("username_logged") + ' compartio su localización',
+        fecha_enviado: datetime,
+        fotoperfil : sessionStorage.getItem("foto_logged"),
+        status:"MESSAGE",
+        id_chat: sessionStorage.getItem("id_logged"),
+        latitud: position.coords.latitude,
+        longitud: position.coords.longitude,
+      };
+      
+      if(userData.sender_name !== tab){
+        privateChats.get(tab).push(chatMessage);
+        setPrivateChats(new Map(privateChats));
+      }
+      
+      stompClient.send("/app/private-message", {}, JSON.stringify(chatMessage));
+      setUserData({...userData,"message": ""});
+    }
+});
+
+}
+
 
 
 const getUserMessage=(username)=>{
@@ -287,9 +333,17 @@ Date.prototype.timeNow = function () {
     setTab('CHATROOM');
   }
 
+  const filesToFirebase = () => {
+    inputFile.current.click()
+  }
+
   const toggle =()=>{
     setActive(!active);
     }
+
+    const toggle2 =()=>{
+        setActive2(!active2);
+        }
 
 
         const navigate = useNavigate();
@@ -327,7 +381,7 @@ Date.prototype.timeNow = function () {
                 </li>
                 <br />  
             </ul>
-            <div className="media d-flex" id="profile-picture">
+            <div className="media d-flex " id="profile-picture">
                 <img src={userData.fotoperfil} alt="..." width={60} className=" mx-auto rounded-circle img-thumbnail shadow-sm" />
             </div>      
         </div>
@@ -406,6 +460,32 @@ Date.prototype.timeNow = function () {
                 </ul>
 
             </Modal>
+
+            <Modal active={active2} toggle={toggle2}>
+
+                <h2 id='titulo-chats'>Configuración</h2>
+                <br></br>
+
+                <p>Status:</p>
+                <Form.Select className='status-usuario'>
+                    <option>online</option>
+                    <option>busy</option>
+                    <option>offline</option>                
+                </Form.Select>
+                <br></br>
+                <Form.Check
+                type="checkbox"
+                id="encript-check"
+                label="Activar/Desactivar encriptación de mensajes"
+                />
+                <br></br>
+                <Button type="button" style={{width: '100%'}}>Guardar Cambios</Button>
+                <br></br>
+                <br></br>
+                <Button type="button" style={{width: '100%'}}>Cerrar Sesión</Button>
+
+
+            </Modal>
        
             <div className="vertical-nav" id="sidebar">
                     <ul className="nav flex-column mb-0" id="nav-bar-chat">
@@ -431,11 +511,15 @@ Date.prototype.timeNow = function () {
                 <div className="row">
                     <div className="col-5 col-xl-4" id="mensajes-lista">
                         <br /><br />
-                        <h3 style={{fontWeight: 700}}>Mensajes
-                            <div onClick={() => {toggle(); GetOnlineUsers(); }}>
+                        <h3 style={{fontWeight: 700, display: 'inline-flex'}}>Mensajes
+                            <div style={{marginLeft: '10px'}} onClick={() => {toggle(); GetOnlineUsers(); }}>
                             <FontAwesomeIcon icon={faPenSquare} color='white'  id="nuevo-mensaje" />
                             </div>
+                            <div style={{marginLeft: '10px'}}  onClick={() => {toggle2(); GetOnlineUsers(); }}>
+                            <FontAwesomeIcon icon={faGear} color='white'  id="nuevo-mensaje" />
+                            </div>
                         </h3>
+                        
                         <p id="titulo-mensajes">Privados</p>
                         <hr />
 
@@ -475,19 +559,74 @@ Date.prototype.timeNow = function () {
                                 {[...privateChats.get(tab)].map((chat,index)=>(
                                 <li className={`message ${chat.sender_name === userData.username && "self"}`} key={index} >
                                     {chat.sender_name !== userData.sender_name &&
-                                    <div className="mensaje-recibido-card-privado" style={{display: chat.message != null ? 'block' : 'none'}}>
-                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
-                                        <p className="avatar-privado"><strong>{chat.sender_name}</strong></p>
-                                        <p id="mensaje-burbuja-privado" className="message-data">{chat.message}</p>
-                                        <p id="hora-burbuja-privado">{chat.fecha_enviado}</p>
-                                    </div>
+                                        <div>
+                                            
+                                            {
+                                                chat.latitud == null  
+                                                ? <div className="mensaje-recibido-card-privado" style={{display: chat.message != null ? 'block' : 'none'}}>
+                                                    <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                    <p className="avatar-privado"><strong>{chat.sender_name}</strong></p>
+                                                    <p id="mensaje-burbuja-privado" className="message-data">{chat.message}</p>
+                                                    <p id="hora-burbuja-privado">{chat.fecha_enviado}</p>
+                                                  </div>
+                                                :
+                                                <div className="mensaje-recibido-card-privado localizacion" style={{display: chat.message != null ? 'block' : 'none'}}>
+                                                    <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                    <p className="avatar-privado"><strong>{chat.sender_name}</strong></p>
+                                                    <p id="mensaje-burbuja-privado-loca" className="message-data">
+                                                    <GoogleMap
+                                                        center={{lat:  chat.latitud,lng: chat.longitud}}
+                                                        zoom={15}
+                                                        mapContainerStyle={{width: '100%', height: '100%', position: 'absolute', left: '0',top: '0', borderRadius: '20px'}}
+                                                        options={{
+                                                            zoomControl: false,
+                                                            streetViewControl: false,
+                                                            mapTypeControl: false,
+                                                            fullscreenControl: false,
+                                                            noClear: false,
+                                                        }}>
+                                                        <MarkerF key="marker_1"position={{lat:  chat.latitud,lng: chat.longitud}}/>
+                                                    </GoogleMap>
+                                                    </p>
+                                                    <p id="hora-burbuja-privado-loca">{chat.fecha_enviado}</p>
+                                                </div> 
+
+                                            }
+                                        </div>
                                     }
                                     {chat.sender_name === userData.sender_name && 
-                                    <div className="mensaje-enviado-card-privado" >
-                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
-                                        <p className="avatar-privado self"><strong>{chat.sender_name}</strong></p>
-                                        <p id="mensaje-burbuja-enviado-privado" className="message-data">{chat.message}</p>
-                                        <p id="hora-burbuja-enviado-privado">{chat.fecha_enviado}</p>
+                                    <div>
+                                        
+                                        {
+                                                chat.latitud == null 
+                                                ?
+                                                <div className="mensaje-enviado-card-privado">
+                                                    <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                    <p className="avatar-privado self"><strong>{chat.sender_name}</strong></p>
+                                                    <p id="mensaje-burbuja-enviado-privado" className="message-data">{chat.message}</p>
+                                                    <p id="hora-burbuja-enviado-privado">{chat.fecha_enviado}</p>
+                                                </div>
+                                                :
+                                                <div className="mensaje-enviado-card-privado localizacion">
+                                                 <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                <p className="avatar-privado self"><strong>{chat.sender_name}</strong></p>
+                                                <p id="mensaje-burbuja-enviado-privado-loca" className="message-data"><GoogleMap
+                                                        center={{lat:  chat.latitud,lng: chat.longitud}}
+                                                        zoom={15}
+                                                        mapContainerStyle={{width: '100%', height: '100%', position: 'absolute', right: '0',top: '0', borderRadius: '20px'}}
+                                                        options={{
+                                                            zoomControl: false,
+                                                            streetViewControl: false,
+                                                            mapTypeControl: false,
+                                                            fullscreenControl: false,
+                                                            noClear: false,
+                                                        }}>
+                                                <MarkerF key="marker_1"position={{lat:  chat.latitud,lng: chat.longitud}}/>
+                                                </GoogleMap></p>
+                                                <p id="hora-burbuja-enviado-privado-loca">{chat.fecha_enviado}</p>
+                                                
+                                                </div>
+                                        }
                                     </div>
                                     }
                                 </li>
@@ -497,11 +636,15 @@ Date.prototype.timeNow = function () {
                             <div className="send-message">
                                 <div className="escribir-mensaje">
                                         <input type="text" id="w3review2" name="w3review2" className="input-message2" placeholder="Escribe tu mensaje" autoComplete='off' value={userData.message} onChange={handleMessage} onKeyDown={_handleKeyDownPrivate} rows={1} cols={70} />
+                                        <input type='file' id='file' ref={inputFile} style={{display: 'none'}}/>
                                         <button type="button" className="send-button2" onClick={() => {sendPrivateValue(); GetUserMessages();}}>
                                             <FontAwesomeIcon icon={faPaperPlane} color='gray' size='xl' className="send-button" />
                                         </button>
-                                        <button type='button'  onClick="">
+                                        <button type='button'  onClick={() => filesToFirebase()}>
                                             <FontAwesomeIcon icon={faPaperclip} color='gray' size='xl'/>
+                                        </button>
+                                        <button type='button'  onClick={() => sendLocationPrivate()}>
+                                            <FontAwesomeIcon icon={faLocation} color='gray' size='xl'/>
                                         </button>
                                     </div> 
                             </div>
