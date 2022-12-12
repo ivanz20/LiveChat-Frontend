@@ -1,6 +1,7 @@
 import React, {useState} from "react"
 import { useNavigate } from "react-router-dom";
 import Mapa from './Mapa';
+import FileUpload from './upload'
 export const Login = (props) => {
 
 

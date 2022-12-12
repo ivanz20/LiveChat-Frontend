@@ -102,7 +102,7 @@
     margin-top: 55px;
     border: 4px solid white;
   }
-  
+
 
   #mensajes-lista{
     padding-left: 110px;
@@ -317,6 +317,69 @@
   margin-top: -50px;
   width: 300px;
 }
+#mensaje-burbuja-archivo{
+  background-color: #C4D7E0;
+  position: relative;
+  padding: 15px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: small;
+  border-radius: 0px 20px 20px 20px;
+  margin-left: 70px;
+  margin-top: -50px;
+  width: 300px;
+  height: 150px;
+  overflow: hidden;
+}
+
+#mensaje-burbuja-img{
+  background-color: #C4D7E0;
+  position: relative;
+  padding: 0px;
+  border: #C4D7E0 solid 4px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: small;
+  border-radius: 0px 20px 20px 20px;
+  margin-left: 70px;
+  margin-top: -50px;
+  width: 300px;
+  height: 250px;
+}
+#hora-burbuja-img{
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  font-size: x-small;
+  margin-left:70px;
+  margin-top: -22.8%;
+}
+#hora-burbuja-archivo{
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  font-size: x-small;
+  margin-left:70px;
+  margin-top: -22.8%;
+}
+#mensaje-burbuja-img > img{
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+}
+
+#mensaje-burbuja-loca{
+  background-color: #C4D7E0;
+  border: #C4D7E0 4px solid;
+  position: relative;
+  padding: 15px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: small;
+  border-radius: 0px 20px 20px 20px;
+  margin-left: 70px;
+  margin-top: -50px;
+  width: 300px;
+  height: 250px;
+}
 #hora-burbuja{
   position: relative;
   font-family: 'Inter', sans-serif;
@@ -324,6 +387,18 @@
   margin-left:70px;
   margin-top: -80px;
 
+}
+#hora-burbuja-loca{
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  font-size: x-small;
+  margin-left:70px;
+  margin-top: -22.7%;
+}
+#mensaje-burbuja-enviado-foto > img{
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
 }
 .mensaje-recibido-card > img{
   position: relative;
@@ -538,6 +613,53 @@ background: linear-gradient(0deg, rgba(196,215,224,1) 0%, rgba(110,133,183,1) 10
   margin-left: 70%;
   margin-top: -50px;
   width: 300px;
+  color: white;
+}
+#mensaje-burbuja-enviado-archivo{
+  background-color: #6E85B7;
+  position: relative;
+  padding: 15px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: small;
+  border-radius:20px 0px 20px 20px;
+  margin-left: 70%;
+  margin-top: -40px;
+  width: 300px;
+  height: 150px;
+  color: white;
+  overflow: hidden;
+  text-align: left;
+}
+
+#mensaje-burbuja-enviado-foto{
+  background-color: #6E85B7;
+  position: relative;
+  padding: 0px;
+  border: #6E85B7 4px solid;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: small;
+  border-radius:20px 0px 20px 20px;
+  margin-left: 70%;
+  margin-top: -40px;
+  width: 300px;
+  height: 250px;
+}
+
+#mensaje-burbuja-enviado-loca{
+  background-color: #6E85B7;
+  position: relative;
+  padding: 15px;
+  border: #6E85B7 4px solid;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: small;
+  border-radius:20px 0px 20px 20px;
+  margin-left: 70%;
+  margin-top: -50px;
+  width: 300px;
+  height: 250px;
 }
 #hora-burbuja-enviado{
   position: relative;
@@ -546,6 +668,28 @@ background: linear-gradient(0deg, rgba(196,215,224,1) 0%, rgba(110,133,183,1) 10
   margin-left: 71%;
   margin-top: -81px;
 
+}
+#hora-burbuja-enviado-img{
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  font-size: x-small;
+  margin-left: 71%;
+  margin-top: -23.5%;
+}
+#hora-burbuja-enviado-loca{
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  font-size: x-small;
+  margin-left: 71%;
+  margin-top: -22.7%;
+}
+
+#hora-burbuja-enviado-archivo{
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  font-size: x-small;
+  margin-left: 71%;
+  margin-top: -15%;
 }
 .mensaje-enviado-card > img{
   position: relative;
@@ -584,6 +728,30 @@ background: linear-gradient(0deg, rgba(196,215,224,1) 0%, rgba(110,133,183,1) 10
   margin-top: -50px;
   width: 300px;
 }
+
+#mensaje-burbuja-privado-img{
+  background-color: #C4D7E0;
+  position: relative;
+  padding: 0px;
+  border: #C4D7E0 solid 5px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: small;
+  border-radius: 0px 20px 20px 20px;
+  margin-left: 70px;
+  margin-top: -50px;
+  width: 300px;
+  height: 250px;
+  color: white;
+}
+
+#mensaje-burbuja-privado-img > img{
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+}
+
+
 #hora-burbuja-privado{
   position: relative;
   font-family: 'Inter', sans-serif;
@@ -614,7 +782,79 @@ background: linear-gradient(0deg, rgba(196,215,224,1) 0%, rgba(110,133,183,1) 10
 .localizacion{
   height: 300px !important;
 }
+.imagenes{
+  height: 300px !important;
 
+}
+.archivo{
+  height: 200px !important;
+
+}
+
+
+
+#hora-burbuja-privado-foto{
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  font-size: x-small;
+  margin-left: 200px;
+  margin-top: -31.4%;
+}
+
+#mensaje-burbuja-enviado-privado-img{
+  background-color: #6E85B7;
+  position: relative;
+  padding: 0px;
+  border: #6E85B7 solid 5px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: small;
+  border-radius:20px 0px 20px 20px;
+  margin-left: 60%;
+  margin-top: -50px;
+  width: 300px;
+  height: 250px;
+  color: white;
+}
+
+#mensaje-burbuja-enviado-privado-archivo{
+  background-color: #6E85B7;
+  position: relative;
+  padding: 10px;
+  border: #6E85B7 solid 5px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: small;
+  border-radius:20px 0px 20px 20px;
+  margin-left: 60%;
+  margin-top: -50px;
+  width: 300px;
+  height: 160px;
+  overflow: hidden;
+  color: white;
+}
+
+.hora-burbuja-enviado-privado-archivo{
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  font-size: x-small;
+  margin-left: 61%;
+  margin-top: -21.5%;
+}
+
+.hora-burbuja-enviado-privado-foto{
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  font-size: x-small;
+  margin-left: 61%;
+  margin-top: -32%;
+}
+
+#mensaje-burbuja-enviado-privado-img > img{
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+}
 #mensaje-burbuja-enviado-privado{
   background-color: #6E85B7;
   position: relative;
@@ -657,6 +897,29 @@ background: linear-gradient(0deg, rgba(196,215,224,1) 0%, rgba(110,133,183,1) 10
   margin-top: -50px;
   width: 300px;
   height: 250px;
+}
+#hora-burbuja-privado-archive{
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  font-size: x-small;
+  margin-left: 200px;
+  margin-top: -21.5%;
+}
+#mensaje-burbuja-privado-archivo{
+  background-color: #C4D7E0;
+  border: #C4D7E0 solid 5px;
+  position: relative;
+  padding: 10px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: small;
+  border-radius: 0px 20px 20px 20px;
+  margin-left: 70px;
+  margin-top: -50px;
+  width: 300px;
+  height: 160px;
+  overflow: hidden;
+
 }
 #hora-burbuja-enviado-privado{
   position: relative;
@@ -773,3 +1036,10 @@ background: linear-gradient(0deg, rgba(196,215,224,1) 0%, rgba(110,133,183,1) 10
     overflow-x: hidden;
 }
 
+.image-upload>input {
+  display: none;
+}
+
+.link-archivo{
+  color: white;
+}
