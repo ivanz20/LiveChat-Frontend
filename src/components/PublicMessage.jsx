@@ -88,7 +88,9 @@ export const PublicMessage  = (props) => {
     }, [userData]);
 
 
+    
     const GetUserMessages = () =>{
+        console.log("funcitotn")
         fetch("http://localhost:8080/api/chatsprivados/UserChats/" + sessionStorage.getItem("id_logged"))
         .then((response) => response.json())
         .then((chat) => {
@@ -151,7 +153,6 @@ export const PublicMessage  = (props) => {
     }
 
   const onMessageReceived = (payload)=>{
-    // GetUserMessages();
     var payloadData = JSON.parse(payload.body);
     switch(payloadData.status){
         case "JOIN":
@@ -364,6 +365,23 @@ const sendLocationPublic=()=>{
 
 }
 
+
+
+const HandleChat = async (iduser) => {
+    try{
+        await axios.post("http://localhost:8080/api/chatsprivados/addchat",{
+            ultimo_mensaje:"Nuevo Chat",
+            iddestinatario:iduser,
+            idremitente:sessionStorage.getItem("id_logged")
+        });
+        alert("Nueva Conversacion Agregada");
+        navigate("/mensajes");
+      }catch(err){
+        alert(err);
+      }
+
+}
+
 const HandleUpload =(event) => {
     const file = event.target.files[0];
 
@@ -502,7 +520,6 @@ Date.prototype.timeNow = function () {
 const SaveUserChanges = () => {
     var statususer = document.getElementById('status-user').value;
     var encript = document.getElementById('encript-check').value;
-
     if(encript=='on'){
         setEncriptar("true")
     }else{
@@ -767,7 +784,7 @@ const SaveUserChanges = () => {
                             {[...onlineUsers].map((usuario,index)=>(
                             <li key={index} >
                                 {
-                                    <button className='btn-enlinea'>
+                                    <button className='btn-enlinea' onClick={() => HandleChat(usuario['id'])}>
                                     <div className="card-online">
                                         <div className={"status2 " + usuario['status']} />
                                         <img src={usuario['fotoperfil']} alt="..." width={50} className="rounded-circle shadow-sm" />
