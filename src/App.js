@@ -5,6 +5,7 @@ import {Login} from './components/Login'
 import {PrivateMessage} from './components/PrivateMessage'
 import { PublicMessage } from './components/PublicMessage'
 import {Mapa} from './components/Mapa'
+import {CallPublic} from './components/LlamadaPublica'
 
 const App = () => {
   const [currentForm,setCurrentForm] = useState('login');
@@ -24,6 +25,7 @@ const App = () => {
       <Route path='/registro' element={<Register/>} />
       {/* <Route path='/mensajes' element={<PrivateMessage/>} /> */}
       <Route path='/mensajes' element={<PublicMessage/>} />
+      <Route path='/videocall' element={<CallPublic/>} />
 
    </Routes>
   )

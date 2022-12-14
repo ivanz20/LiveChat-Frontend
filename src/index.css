@@ -91,8 +91,10 @@
   #profile-picture{
     margin-top: 20px;
     cursor: pointer;
+    height: 65px;
 
   }
+
 
   .statuspp{
     position: absolute;

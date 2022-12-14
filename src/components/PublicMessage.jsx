@@ -590,6 +590,11 @@ const SaveUserChanges = () => {
 
         const navigate = useNavigate();
 
+        const navigateCall = () => {
+            // 👇️ navigate to /
+            navigate('/videocall');
+          };
+
 
 
       const GetOnlineUsers = async () => {
@@ -597,6 +602,16 @@ const SaveUserChanges = () => {
         const data = await res.json();
         setOnlineUsers(data);
       };
+
+      const CerrarSesion = () => {
+        fetch("http://localhost:8080/api/users/userUpdate/?id=" + sessionStorage.getItem("id_logged") + "&status=" + "offline")
+        .then((response) => response.json())
+        .then((chat) => {
+        });
+
+        navigate("/")
+
+      }
 
     
       
@@ -624,7 +639,8 @@ const SaveUserChanges = () => {
                 <br />  
             </ul>
             <div className="media d-flex " id="profile-picture">
-                <img src={userData.fotoperfil} alt="..." width={60} className=" mx-auto rounded-circle img-thumbnail shadow-sm" />
+                <img src={userData.fotoperfil} alt="..." width='60px' height='60px'
+                className=" mx-auto rounded-circle img-thumbnail shadow-sm" />
             </div>      
         </div>
         <div className="container">
@@ -632,8 +648,7 @@ const SaveUserChanges = () => {
                     <div className="titulo-nombre">
                         <h2>Chat Grupal</h2>
                         <img src="https://cdn-icons-png.flaticon.com/512/236/236842.png" alt="..." width={80} className="rounded-circle shadow-sm" />
-                        <FontAwesomeIcon icon={faVideo} color='white' />
-                        <FontAwesomeIcon icon={faCircleInfo} color='white'/>
+                        <FontAwesomeIcon icon={faVideo} color='white' onClick={navigateCall}/>
                     </div>
                 
                     {tab==="CHATROOM" && <div className="chat-content">
@@ -649,7 +664,7 @@ const SaveUserChanges = () => {
                                     chat.mensaje_archivo == null
                                     ?
                                         <div className="mensaje-recibido-card">
-                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                         <p className="avatar">{chat.sender_name}</p>
                                         <p id="mensaje-burbuja" className="message-data">{chat.message}</p>
                                         <p id="hora-burbuja">{chat.fecha_enviado}</p>
@@ -658,7 +673,7 @@ const SaveUserChanges = () => {
                                     chat.tipo_archivo == 'imagen'
                                     ?
                                     <div className="mensaje-recibido-card imagenes">
-                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                         <p className="avatar">{chat.sender_name}</p>
                                         <p id="mensaje-burbuja-img" className="message-data">
                                         <img src={chat.mensaje_archivo}></img>
@@ -667,7 +682,7 @@ const SaveUserChanges = () => {
                                         </div>
                                     :
                                     <div className="mensaje-recibido-card archivo">
-                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                         <p className="avatar">{chat.sender_name}</p>
                                         <p id="mensaje-burbuja-archivo" className="message-data">
                                         <a className='link-archivo' href={chat.mensaje_archivo}>Archivo enviado {chat.mensaje_archivo}</a>
@@ -677,7 +692,7 @@ const SaveUserChanges = () => {
 
                                 :
                                 <div className="mensaje-recibido-card localizacion">
-                                <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                 <p className="avatar">{chat.sender_name}</p>
                                 <p id="mensaje-burbuja-loca" className="message-data">
                                 <GoogleMap
@@ -702,7 +717,7 @@ const SaveUserChanges = () => {
                                         chat.mensaje_archivo == null
                                             ?
                                             <div className="mensaje-enviado-card">
-                                            <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                            <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                             <p className="avatar self">{chat.sender_name}</p>
                                             <p id="mensaje-burbuja-enviado" className="message-data">{chat.message}</p>
                                             <p id="hora-burbuja-enviado">{chat.fecha_enviado}</p>
@@ -711,7 +726,7 @@ const SaveUserChanges = () => {
                                                         chat.tipo_archivo == 'imagen'
                                                         ?
                                                         <div className="mensaje-enviado-card imagenes">
-                                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }} />
                                                         <p className="avatar self">{chat.sender_name}</p>
                                                         <p id="mensaje-burbuja-enviado-foto" className="message-data">
                                                         <img src={chat.mensaje_archivo}></img>
@@ -720,7 +735,7 @@ const SaveUserChanges = () => {
                                                         </div>
                                                         :
                                                         <div className="mensaje-enviado-card archivo">
-                                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }} />
                                                         <p className="avatar self">{chat.sender_name}</p>
                                                         <p id="mensaje-burbuja-enviado-archivo" className="message-data">
                                                         <a className='link-archivo' href={chat.mensaje_archivo}>Archivo enviado {chat.mensaje_archivo}</a>
@@ -730,7 +745,7 @@ const SaveUserChanges = () => {
 
                                     :
                                     <div className="mensaje-enviado-card localizacion">
-                                    <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                    <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                     <p className="avatar self">{chat.sender_name}</p>
                                     <p id="mensaje-burbuja-enviado-loca" className="message-data">
                                     <GoogleMap
@@ -787,7 +802,7 @@ const SaveUserChanges = () => {
                                     <button className='btn-enlinea' onClick={() => HandleChat(usuario['id'])}>
                                     <div className="card-online">
                                         <div className={"status2 " + usuario['status']} />
-                                        <img src={usuario['fotoperfil']} alt="..." width={50} className="rounded-circle shadow-sm" />
+                                        <img src={usuario['fotoperfil']} alt="..." width={50} className="rounded-circle shadow-sm" style={{height:'50px', width:'50px', border: '#ccc 2px solid'}}/>
                                         <p className="nombre-contactos">{usuario['nombres'] + " " + usuario['apellidos']}</p>
                                         <p className="email-contactos">{usuario['email']}</p>
                                     </div>
@@ -821,7 +836,7 @@ const SaveUserChanges = () => {
                 <Button type="button" style={{width: '100%', backgroundColor    : '#3f4d6a', border: 'none'}} onClick={()=>{SaveUserChanges()}}>Guardar Cambios</Button>
                 <br></br>
                 <br></br>
-                <Button type="button" style={{width: '100%', backgroundColor    : '#3f4d6a', border: 'none'}}>Cerrar Sesión</Button>
+                <Button type="button" style={{width: '100%', backgroundColor    : '#3f4d6a', border: 'none'}} onClick={()=>{CerrarSesion()}}>Cerrar Sesión</Button>
 
 
             </Modal>
@@ -842,7 +857,7 @@ const SaveUserChanges = () => {
                         <br /> 
                     </ul>
                     <div className="media d-flex" id="profile-picture">
-                        <img src={sessionStorage.getItem("foto_logged")} alt="..." width={60} className=" mx-auto rounded-circle img-thumbnail shadow-sm" />
+                        <img src={sessionStorage.getItem("foto_logged")} alt="..." width='60px' height='60px' className=" mx-auto rounded-circle img-thumbnail shadow-sm" />
                     </div> 
             </div>
 
@@ -868,7 +883,7 @@ const SaveUserChanges = () => {
                             <li onClick={() =>  {getUserMessage(chats['username']);  setTab(chats['username']); }} className={`member ${tab===chats['username'] && "active"}`} key={index} style={{display: chats['username'] === sessionStorage.getItem("username_logged") ? 'none' : 'block'}}>
                                 <div className="card-mensaje">
                                     <div className={"status " + chats['status']} />
-                                    <img src={chats['fotoperfil']} alt="..." width={80} className="rounded-circle shadow-sm" />
+                                    <img src={chats['fotoperfil']} alt="..." width={80} className="rounded-circle shadow-sm" style={{height:'80px', width:'80px'}} />
                                     <p className="nombre-mensaje">{chats['username']}</p>
                                     <p className="mensaje-card">{
                                     checkBase64(chats['ultimomensaje'])
@@ -892,8 +907,8 @@ const SaveUserChanges = () => {
                         <div className="titulo-nombre">
                             <h2>{infoBanner[0]['sender_name']}</h2>
                             <p>{infoBanner[0]['statususer']}</p>
-                            <img src={infoBanner[0]['fotoperfil']} alt="..." width={80} className="rounded-circle shadow-sm" />
-                            <FontAwesomeIcon icon={faVideo} color='white' />
+                            <img src={infoBanner[0]['fotoperfil']} alt="..." width={80} className="rounded-circle shadow-sm" style={{height:'80px', width:'80px'}}/>
+                            {/* <FontAwesomeIcon icon={faVideo} color='white' /> */}
                         </div>}
 
                             <ul className="chat-messages-priv" id="chat-messages-priv">
@@ -908,7 +923,7 @@ const SaveUserChanges = () => {
                                                     chat.mensaje_archivo == null
                                                     ?
                                                         <div className="mensaje-recibido-card-privado" style={{display: chat.message != null ? 'block' : 'none'}}>
-                                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                                         <p className="avatar-privado"><strong>{chat.sender_name}</strong></p>
                                                         <p id="mensaje-burbuja-privado" className="message-data">{chat.message}</p>
                                                         <p id="hora-burbuja-privado">{chat.fecha_enviado}</p>
@@ -917,7 +932,7 @@ const SaveUserChanges = () => {
                                                     chat.tipo_archivo == 'imagen'
                                                     ?
                                                         <div className="mensaje-recibido-card-privado imagenes" style={{display: chat.message != null ? 'block' : 'none'}}>
-                                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                        <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                                         <p className="avatar-privado"><strong>{chat.sender_name}</strong></p>
                                                         <p id="mensaje-burbuja-privado-img" className="message-data">
                                                         <img src={chat.mensaje_archivo}></img>
@@ -926,7 +941,7 @@ const SaveUserChanges = () => {
                                                         </div>
                                                     :
                                                     <div className="mensaje-recibido-card-privado archivo" style={{display: chat.message != null ? 'block' : 'none'}}>
-                                                    <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                    <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm"style={{height:'60px', width:'60px' }}/>
                                                     <p className="avatar-privado"><strong>{chat.sender_name}</strong></p>
                                                     <p id="mensaje-burbuja-privado-archivo" className="message-data">
                                                     <a className='link-archivo' href={chat.mensaje_archivo}>Archivo enviado {chat.mensaje_archivo}</a>
@@ -935,7 +950,7 @@ const SaveUserChanges = () => {
                                                     </div>
                                                 :
                                                 <div className="mensaje-recibido-card-privado localizacion" style={{display: chat.message != null ? 'block' : 'none'}}>
-                                                    <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                    <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                                     <p className="avatar-privado"><strong>{chat.sender_name}</strong></p>
                                                     <p id="mensaje-burbuja-privado-loca" className="message-data">
                                                     <GoogleMap
@@ -967,7 +982,7 @@ const SaveUserChanges = () => {
                                                     chat.mensaje_archivo == null
                                                     ?
                                                         <div className="mensaje-enviado-card-privado">
-                                                            <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                            <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                                             <p className="avatar-privado self"><strong>{chat.sender_name}</strong></p>
                                                             <p id="mensaje-burbuja-enviado-privado" className="message-data">{chat.message}</p>
                                                             <p id="hora-burbuja-enviado-privado">{chat.fecha_enviado}</p>
@@ -976,7 +991,7 @@ const SaveUserChanges = () => {
                                                         chat.tipo_archivo == 'imagen'
                                                         ?
                                                         <div className="mensaje-enviado-card-privado imagenes">
-                                                                <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                                <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                                                 <p className="avatar-privado self"><strong>{chat.sender_name}</strong></p>
                                                                 <p id="mensaje-burbuja-enviado-privado-img" className="message-data">
                                                                     <img src={chat.mensaje_archivo}></img>
@@ -985,7 +1000,7 @@ const SaveUserChanges = () => {
                                                         </div>
                                                         :
                                                         <div className="mensaje-enviado-card-privado archivo">
-                                                            <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                            <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                                             <p className="avatar-privado self"><strong>{chat.sender_name}</strong></p>
                                                             <p id="mensaje-burbuja-enviado-privado-archivo" className="message-data">
                                                                 <a className='link-archivo' href={chat.mensaje_archivo}>Archivo enviado {chat.mensaje_archivo}</a>
@@ -995,7 +1010,7 @@ const SaveUserChanges = () => {
 
                                                 :
                                                 <div className="mensaje-enviado-card-privado localizacion">
-                                                 <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" />
+                                                 <img src={chat.fotoperfil} alt="..." width={60} className="rounded-circle shadow-sm" style={{height:'60px', width:'60px' }}/>
                                                 <p className="avatar-privado self"><strong>{chat.sender_name}</strong></p>
                                                 <p id="mensaje-burbuja-enviado-privado-loca" className="message-data"><GoogleMap
                                                         center={{lat:  chat.latitud,lng: chat.longitud}}

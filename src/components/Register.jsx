@@ -1,8 +1,27 @@
-import React, {useState} from "react"
 import { useNavigate } from "react-router-dom";
 import axios from 'axios'
+import { getStorage,ref,uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { initializeApp } from "firebase/app";
+import React, { useEffect, useState, useRef,useLayoutEffect } from 'react'
+
+
+const firebaseConfig = ({
+    apiKey: "AIzaSyC7T3KdfTQ-jRHafC-u0CMtRfdSZwHNfgA",
+    authDomain: "archivos-poi.firebaseapp.com",
+    databaseURL: "https://archivos-poi-default-rtdb.firebaseio.com",
+    projectId: "archivos-poi",
+    storageBucket: "archivos-poi.appspot.com",
+    messagingSenderId: "56109750421",
+    appId: "1:56109750421:web:60d65df59955e3dd51639c"
+  });
+  
+  const app = initializeApp(firebaseConfig);
+  const storage = getStorage(app);
 
 export const Register =(props) =>{
+
+    const inputFile = useRef(null) 
+
 
     const navigate = useNavigate();
 
@@ -15,13 +34,32 @@ export const Register =(props) =>{
         username:''
     });
 
+    const HandleUpload =(event) => {
+        const file = event.target.files[0];
 
+        var seconds = new Date().getTime() / 1000;
+        var tipoarchivo = file.name.toString();
+        var auxarchivo = tipoarchivo.split('.');
+
+            const storageRef = ref(storage, `/fotos/fotosperfil/${seconds + file.name}`)
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on('state_changed', snapshot => {
+        },error => {console.log(error.message)},
+        () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                setUserData({...userData,"fotoperfil": downloadURL})
+            });
+            
+        }
+        );
+
+    }
+    
     const handleSubmit = async (e) =>{
       e.preventDefault();
-      var fotoaux = userData.fotoperfil;
-      const fotoarray = fotoaux.split('\\');
-      var position = fotoarray.length;
-      let fotoSave = fotoarray[position-1];
+
+      let fotoSave = userData.fotoperfil;
 
       var usernameaux = userData.email;
       const usernamearray = usernameaux.split('@');
@@ -55,10 +93,10 @@ export const Register =(props) =>{
                         <form onSubmit={handleSubmit}>
                         <input value={userData.email} onChange={(e) => setUserData({...userData,"email": e.target.value})} type="email" placeholder="Correo Electronico" required/>
                             <input value={userData.pass} onChange={(e) => setUserData({...userData,"password": e.target.value})} type="password" placeholder="Contraseña" required/>
-                            <input value={userData.nombre} onChange={(e) => setUserData({...userData,"nombres": e.target.value})} type="text" placeholder="Nombre(s)" required/>
+                            <input value={userData.nombres} onChange={(e) => setUserData({...userData,"nombres": e.target.value})} type="text" placeholder="Nombre(s)" required/>
                             <input value={userData.apellidos} onChange={(e) => setUserData({...userData,"apellidos": e.target.value})} type="text" placeholder="Apellido(s)" required/>
                             <div className="custom-file">
-                                <input type="file" value={userData.fotoperfil} onChange={(e) => setUserData({...userData,"fotoperfil": e.target.value})} className="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01" />
+                                <input type="file"  onChange={(event) => HandleUpload(event)} ref={inputFile}  className="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01" />
                                 <label className="custom-file-label" htmlFor="inputGroupFile01"><strong>Elige tu foto de perfil</strong></label>
                             </div>
                             <br></br>
